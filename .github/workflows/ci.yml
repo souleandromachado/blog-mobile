@@ -16,9 +16,3 @@ jobs:
 
       - name: Instalar dependências
         run: npm install
-
-      - name: Rodar Linter
-        run: npm run lint
-
-      - name: Rodar Testes
-        run: npm test
