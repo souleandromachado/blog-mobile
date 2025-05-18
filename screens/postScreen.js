@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
 export default function PostScreen({ route, navigation }) {
   const { id, titulo, autor, conteudo, onDelete } = route.params;
-
   const [isLogado, setIsLogado] = useState(false); // Simule login
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Home',
+      headerStyle: {
+        backgroundColor: '#F5E1C5',
+      },
+      headerTitleStyle: {
+        color: '#00838F',
+        fontWeight: 'bold',
+      },
+    });
+  }, [navigation]);
 
   const handleDeletar = () => {
     Alert.alert(
@@ -16,8 +28,8 @@ export default function PostScreen({ route, navigation }) {
           text: 'Deletar',
           style: 'destructive',
           onPress: () => {
-            onDelete(id); // Chama função passada para deletar
-            navigation.goBack(); // Volta para home
+            onDelete(id);
+            navigation.goBack();
           },
         },
       ]
@@ -49,21 +61,39 @@ export default function PostScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#f9f9f9' },
-  titulo: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, color: '#004d40' },
-  autor: { fontSize: 16, color: '#666', marginBottom: 20 },
-  conteudo: { fontSize: 16, lineHeight: 24, color: '#333' },
+  container: { 
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f9f9f9'
+  },
+  titulo: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#00838F'
+  },
+  autor: {
+    fontSize: 16,
+    color: '#00838F',
+    marginBottom: 20
+  },
+  conteudo: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#333'
+  },
   botaoEditar: {
-    backgroundColor: '#00796b',
+    marginTop: 20,
+    backgroundColor: '#00838F',
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: 'center',
     marginBottom: 10,
   },
   botaoDeletar: {
     backgroundColor: '#d32f2f',
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: 'center',
   },
   textoBotao: {

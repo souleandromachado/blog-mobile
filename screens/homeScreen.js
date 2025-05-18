@@ -35,25 +35,22 @@ export default function HomeScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState('');
-  const [isLogado, setIsLogado] = useState(false);
+  const [isLogado, setIsLogado] = useState(true);
 
 useLayoutEffect(() => {
   navigation.setOptions({
     title: 'Colégio Lumiar',
     headerStyle: {
       backgroundColor: '#F5E1C5',
-      height: 70,
+      headerTitleAlign: 'left',
     },
     headerTitleStyle: {
       fontWeight: 'bold',
       fontSize: 20,
       color: '#00838F',
     },
-    headerTitleContainerStyle: {
-      paddingTop: 20,
-    },
     headerRight: () => (
-      <View style={{ paddingRight: 10, paddingTop: 20 }}>
+      <View style={{ paddingRight: 10 }}>
         <TouchableOpacity
           onPress={() => {
             if (isLogado) {
@@ -65,12 +62,12 @@ useLayoutEffect(() => {
           style={{
             backgroundColor: '#4CAF50',
             paddingVertical: 6,
-            paddingHorizontal: 12,
+            paddingHorizontal: 5,
             borderRadius: 3,
           }}
         >
           <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
-            {isLogado ? 'Sair' : 'Sou Docente'}
+            {isLogado ? 'Sair' : 'Login'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -110,7 +107,43 @@ useLayoutEffect(() => {
 
   return (
     <View style={styles.container}>
-      {/* Campo de busca */}
+
+      {!isLogado && (
+        <View style={styles.botoesAlunosContainer}>
+          <TouchableOpacity
+            style={[styles.botaoCadastroAluno, styles.botaoLadoALado]}
+            onPress={() => navigation.navigate('CadastrarAluno')}
+          >
+            <Text style={styles.botaoTexto}>+ Novo Aluno</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.botaoAlunos, styles.botaoLadoALado]}
+            onPress={() => navigation.navigate('AlunosScreen')}
+          >
+            <Text style={styles.botaoTexto}>Alunos</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {isLogado && (
+        <View style={styles.botoesProfessoresContainer}>
+          <TouchableOpacity
+            style={[styles.botaoCadastroProf, styles.botaoLadoALado]}
+            onPress={() => navigation.navigate('CadastrarProfessor')}
+          >
+            <Text style={styles.botaoTexto}>+ Novo Professor</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.botaoProfessores, styles.botaoLadoALado]}
+            onPress={() => navigation.navigate('ProfessoresScreen')}
+          >
+            <Text style={styles.botaoTexto}>Professores</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       <TextInput
         placeholder="Buscar postagens..."
         value={busca}
@@ -147,14 +180,26 @@ useLayoutEffect(() => {
         )}
       />
 
-      {isLogado && (
+    {isLogado && (
+      <View style={styles.botoesContainer}>
         <TouchableOpacity
-          style={styles.botaoNovaPostagem}
+          style={[styles.botao, styles.botaoCriar]}
           onPress={() => navigation.navigate('CreatePost')}
         >
-          <Text style={styles.botaoTexto}>+ Nova Postagem</Text>
+          <Text style={styles.botaoTexto}>+ Criar novo post</Text>
         </TouchableOpacity>
-      )}
+
+        <TouchableOpacity
+          style={[styles.botao, styles.botaoAdministrar]}
+          onPress={() => navigation.navigate('AdminScreen', {
+            posts,
+            deletarPost,
+          })}
+        >
+          <Text style={styles.botaoTexto}>Administrar Posts</Text>
+        </TouchableOpacity>
+      </View>
+    )}
     </View>
   );
 }
@@ -192,7 +237,6 @@ const styles = StyleSheet.create({
   },
   postAutor: {
     fontSize: 14,
-    color: '#555',
     marginTop: 4,
     color: '#00838F',
   },
@@ -202,15 +246,55 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontStyle: 'italic',
   },
-  botaoNovaPostagem: {
-    backgroundColor: '#00796b',
-    padding: 15,
-    borderRadius: 10,
+  botoesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20
+  },
+  botao: {
+    flex: 1,
+    paddingVertical: 15,
+    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
+  },
+  botaoCriar: {
+    backgroundColor: '#4CAF50',
+  },
+  botaoAdministrar: {
+    backgroundColor: '#00838F',
+    marginLeft: 10,
   },
   botaoTexto: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
+  },
+  botaoAlunos: {
+    backgroundColor: '#00838F',
+  },
+  botaoProfessores: {
+    backgroundColor: '#00838F',
+  },
+  botaoCadastroProf: {
+  backgroundColor: '#4CAF50',
+  },
+  botoesProfessoresContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 15,
+  },
+  botaoLadoALado: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  botoesAlunosContainer: {
+  flexDirection: 'row',
+  gap: 10,
+  marginBottom: 15,
+  },
+  botaoCadastroAluno: {
+    backgroundColor: '#4CAF50',
   },
 });
