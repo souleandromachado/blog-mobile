@@ -35,25 +35,22 @@ export default function HomeScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState('');
-  const [isLogado, setIsLogado] = useState(false);
+  const [isLogado, setIsLogado] = useState(true);
 
 useLayoutEffect(() => {
   navigation.setOptions({
     title: 'Colégio Lumiar',
     headerStyle: {
       backgroundColor: '#F5E1C5',
-      height: 70,
+      headerTitleAlign: 'left',
     },
     headerTitleStyle: {
       fontWeight: 'bold',
       fontSize: 20,
       color: '#00838F',
     },
-    headerTitleContainerStyle: {
-      paddingTop: 20,
-    },
     headerRight: () => (
-      <View style={{ paddingRight: 10, paddingTop: 20 }}>
+      <View style={{ paddingRight: 10 }}>
         <TouchableOpacity
           onPress={() => {
             if (isLogado) {
@@ -65,12 +62,12 @@ useLayoutEffect(() => {
           style={{
             backgroundColor: '#4CAF50',
             paddingVertical: 6,
-            paddingHorizontal: 12,
+            paddingHorizontal: 5,
             borderRadius: 3,
           }}
         >
           <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
-            {isLogado ? 'Sair' : 'Sou Docente'}
+            {isLogado ? 'Sair' : 'Login'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -252,7 +249,7 @@ const styles = StyleSheet.create({
   botoesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginBottom: 20
   },
   botao: {
     flex: 1,
