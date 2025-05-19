@@ -1,4 +1,5 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -6,30 +7,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
-  Button,
   TextInput,
 } from 'react-native';
-
-const postsExemplo = [
-  {
-    id: '1',
-    titulo: 'Bem-vindos ao novo semestre!',
-    autor: 'Prof. Ana',
-    conteudo: 'Estamos empolgados para começar com novas atividades educativas.',
-  },
-  {
-    id: '2',
-    titulo: 'Dicas para a feira de ciências',
-    autor: 'Prof. João',
-    conteudo: 'Preparem seus experimentos com criatividade!',
-  },
-  {
-    id: '3',
-    titulo: 'Aula extra de matemática',
-    autor: 'Prof. Marcos',
-    conteudo: 'Revisaremos frações e porcentagens com exercícios práticos.',
-  },
-];
+import { getPosts, deletePost } from '../services/api';  // IMPORTA FUNÇÕES DO API.JS
 
 export default function HomeScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
@@ -37,54 +17,71 @@ export default function HomeScreen({ navigation }) {
   const [busca, setBusca] = useState('');
   const [isLogado, setIsLogado] = useState(true);
 
-useLayoutEffect(() => {
-  navigation.setOptions({
-    title: 'Colégio Lumiar',
-    headerStyle: {
-      backgroundColor: '#F5E1C5',
-      headerTitleAlign: 'left',
-    },
-    headerTitleStyle: {
-      fontWeight: 'bold',
-      fontSize: 20,
-      color: '#00838F',
-    },
-    headerRight: () => (
-      <View style={{ paddingRight: 10 }}>
-        <TouchableOpacity
-          onPress={() => {
-            if (isLogado) {
-              setIsLogado(false);
-            } else {
-              navigation.navigate('Login', { setIsLogado });
-            }
-          }}
-          style={{
-            backgroundColor: '#4CAF50',
-            paddingVertical: 6,
-            paddingHorizontal: 5,
-            borderRadius: 3,
-          }}
-        >
-          <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
-            {isLogado ? 'Sair' : 'Login'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    ),
-  });
-}, [navigation, isLogado]);
+  const buscarPosts = async () => {
+    setCarregando(true);
+    const resultado = await getPosts();
+    if (resultado.success === false) {
+      alert(resultado.error);
+      setPosts([]);
+    } else {
+      setPosts(resultado);
+    }
+    setCarregando(false);
+  };
 
+  useFocusEffect(
+    useCallback(() => {
+      buscarPosts();
+    }, [])
+  );
 
-  useEffect(() => {
-    setTimeout(() => {
-      setPosts(postsExemplo);
-      setCarregando(false);
-    }, 1000);
-  }, []);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Colégio Lumiar',
+      headerStyle: {
+        backgroundColor: '#F5E1C5',
+        headerTitleAlign: 'left',
+      },
+      headerTitleStyle: {
+        fontWeight: 'bold',
+        fontSize: 20,
+        color: '#00838F',
+      },
+      headerRight: () => (
+        <View style={{ paddingRight: 10 }}>
+          <TouchableOpacity
+            onPress={() => {
+              if (isLogado) {
+                setIsLogado(false);
+              } else {
+                navigation.replace('Login', { setIsLogado });
+              }
+            }}
+            style={{
+              backgroundColor: '#4CAF50',
+              paddingVertical: 6,
+              marginHorizontal: -3,
+              paddingHorizontal: 2,
+              borderRadius: 3,
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
+              {isLogado ? 'Sair' : 'Login'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  }, [navigation, isLogado]);
 
-  const deletarPost = (id) => {
-    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+  // Função atualizada para deletar via api.js
+  const handleDeletarPost = async (id) => {
+    const resultado = await deletePost(id);
+    if (resultado.success) {
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+    } else {
+      alert(resultado.error);
+    }
   };
 
   const postsFiltrados = posts.filter((post) => {
@@ -107,19 +104,18 @@ useLayoutEffect(() => {
 
   return (
     <View style={styles.container}>
-
       {!isLogado && (
         <View style={styles.botoesAlunosContainer}>
           <TouchableOpacity
             style={[styles.botaoCadastroAluno, styles.botaoLadoALado]}
-            onPress={() => navigation.navigate('CadastrarAluno')}
+            onPress={() => navigation.replace('CadastrarAluno')}
           >
             <Text style={styles.botaoTexto}>+ Novo Aluno</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.botaoAlunos, styles.botaoLadoALado]}
-            onPress={() => navigation.navigate('AlunosScreen')}
+            onPress={() => navigation.replace('AlunosScreen')}
           >
             <Text style={styles.botaoTexto}>Alunos</Text>
           </TouchableOpacity>
@@ -130,14 +126,14 @@ useLayoutEffect(() => {
         <View style={styles.botoesProfessoresContainer}>
           <TouchableOpacity
             style={[styles.botaoCadastroProf, styles.botaoLadoALado]}
-            onPress={() => navigation.navigate('CadastrarProfessor')}
+            onPress={() => navigation.replace('CadastrarProfessor')}
           >
             <Text style={styles.botaoTexto}>+ Novo Professor</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.botaoProfessores, styles.botaoLadoALado]}
-            onPress={() => navigation.navigate('ProfessoresScreen')}
+            onPress={() => navigation.replace('ProfessoresScreen')}
           >
             <Text style={styles.botaoTexto}>Professores</Text>
           </TouchableOpacity>
@@ -153,17 +149,17 @@ useLayoutEffect(() => {
 
       <FlatList
         data={postsFiltrados}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
         ListEmptyComponent={<Text style={{ marginTop: 20 }}>Nenhuma postagem encontrada.</Text>}
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate('Post', {
+              navigation.replace('Post', {
                 id: item.id,
                 titulo: item.titulo,
                 autor: item.autor,
                 conteudo: item.conteudo,
-                onDelete: deletarPost,
+                onDelete: handleDeletarPost,
               })
             }
           >
@@ -180,26 +176,28 @@ useLayoutEffect(() => {
         )}
       />
 
-    {isLogado && (
-      <View style={styles.botoesContainer}>
-        <TouchableOpacity
-          style={[styles.botao, styles.botaoCriar]}
-          onPress={() => navigation.navigate('CreatePost')}
-        >
-          <Text style={styles.botaoTexto}>+ Criar novo post</Text>
-        </TouchableOpacity>
+      {isLogado && (
+        <View style={styles.botoesContainer}>
+          <TouchableOpacity
+            style={[styles.botao, styles.botaoCriar]}
+            onPress={() => navigation.replace('CreatePost')}
+          >
+            <Text style={styles.botaoTexto}>+ Criar novo post</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.botao, styles.botaoAdministrar]}
-          onPress={() => navigation.navigate('AdminScreen', {
-            posts,
-            deletarPost,
-          })}
-        >
-          <Text style={styles.botaoTexto}>Administrar Posts</Text>
-        </TouchableOpacity>
-      </View>
-    )}
+          <TouchableOpacity
+            style={[styles.botao, styles.botaoAdministrar]}
+            onPress={() =>
+              navigation.replace('AdminScreen', {
+                posts,
+                deletarPost: handleDeletarPost,
+              })
+            }
+          >
+            <Text style={styles.botaoTexto}>Administrar Posts</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -249,7 +247,7 @@ const styles = StyleSheet.create({
   botoesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20
+    marginBottom: 20,
   },
   botao: {
     flex: 1,
@@ -276,7 +274,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#00838F',
   },
   botaoCadastroProf: {
-  backgroundColor: '#4CAF50',
+    backgroundColor: '#4CAF50',
   },
   botoesProfessoresContainer: {
     flexDirection: 'row',
@@ -290,9 +288,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   botoesAlunosContainer: {
-  flexDirection: 'row',
-  gap: 10,
-  marginBottom: 15,
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 15,
   },
   botaoCadastroAluno: {
     backgroundColor: '#4CAF50',

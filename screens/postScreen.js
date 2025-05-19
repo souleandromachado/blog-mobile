@@ -7,7 +7,7 @@ export default function PostScreen({ route, navigation }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Home',
+      title: 'Postagem',
       headerStyle: {
         backgroundColor: '#F5E1C5',
       },
@@ -46,7 +46,7 @@ export default function PostScreen({ route, navigation }) {
         <>
           <TouchableOpacity
             style={styles.botaoEditar}
-            onPress={() => navigation.navigate('EditPost', { id, titulo, autor, conteudo })}
+            onPress={() => navigation.replace('EditPost', { id, titulo, autor, conteudo })}
           >
             <Text style={styles.textoBotao}>Editar</Text>
           </TouchableOpacity>
@@ -61,7 +61,7 @@ export default function PostScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
+  container: {
     flex: 1,
     padding: 20,
     backgroundColor: '#f9f9f9'

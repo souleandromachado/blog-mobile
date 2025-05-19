@@ -62,7 +62,7 @@ export default function EditarProfessor({ route, navigation }) {
         <Text style={styles.textoBotao}>Salvar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.botaoCancelar} onPress={() => navigation.navigate('ProfessoresScreen')}>
+      <TouchableOpacity style={styles.botaoCancelar} onPress={() => navigation.replace('ProfessoresScreen')}>
         <Text style={styles.textoBotao}>Cancelar</Text>
       </TouchableOpacity>
     </View>

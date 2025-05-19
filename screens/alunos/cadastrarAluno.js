@@ -7,7 +7,7 @@ export default function CadastrarAluno({ navigation }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Home',
+      title: 'Cadastro de alunos',
       headerStyle: {
         backgroundColor: '#F5E1C5',
       },

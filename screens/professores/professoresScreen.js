@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,29 +6,25 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
-
-const professoresExemplo = [
-  { id: '1', nome: 'Prof. Ana Clara', disciplina: 'Português' },
-  { id: '2', nome: 'Prof. João Pedro', disciplina: 'Matemática' },
-  { id: '3', nome: 'Prof. Marcos Lima', disciplina: 'Ciências' },
-  { id: '4', nome: 'Prof. Fernanda Souza', disciplina: 'História' },
-  { id: '5', nome: 'Prof. Min Yoongi', disciplina: 'Geografia' },
-  { id: '6', nome: 'Prof. Carla Dias', disciplina: 'Educação Física' },
-];
+import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 const ITEMS_POR_PAGINA = 4;
 
 export default function ProfessoresScreen({ navigation }) {
-  const [professores, setProfessores] = useState(professoresExemplo);
+  const [professores, setProfessores] = useState([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const API_URL = 'https://blog-api-latest-unqs.onrender.com/professores';
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Home',
-      headerStyle: {
-        backgroundColor: '#F5E1C5',
-      },
+      title: 'Professores',
+      headerStyle: { backgroundColor: '#F5E1C5' },
       headerTitleStyle: {
         color: '#00838F',
         fontWeight: 'bold',
@@ -36,6 +32,25 @@ export default function ProfessoresScreen({ navigation }) {
       },
     });
   }, [navigation]);
+
+useFocusEffect(
+  useCallback(() => {
+    carregarProfessores();
+  }, [])
+);
+
+  const carregarProfessores = async () => {
+    setLoading(true);
+    try {
+      const resposta = await axios.get(API_URL);
+      setProfessores(resposta.data);
+    } catch (erro) {
+      console.error('Erro ao buscar professores:', erro);
+      Alert.alert('Erro', 'Não foi possível carregar os professores.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const deletarProfessor = (id) => {
     Alert.alert(
@@ -73,37 +88,42 @@ export default function ProfessoresScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Lista de Professores</Text>
-      <FlatList
-        data={professoresPaginados}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.nome}>{item.nome}</Text>
-            <Text style={styles.disciplina}>{item.disciplina}</Text>
 
-            <View style={styles.botoesLinha}>
-              <TouchableOpacity
-                style={[styles.botao, styles.botaoEditar]}
-                onPress={() =>
-                  navigation.navigate('EditarProfessor', {
-                    id: item.id,
-                    nome: item.nome,
-                    disciplina: item.disciplina,
-                  })
-                }
-              >
-                <Text style={styles.textoBotao}>Editar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.botao, styles.botaoExcluir]}
-                onPress={() => deletarProfessor(item.id)}
-              >
-                <Text style={styles.textoBotao}>Excluir</Text>
-              </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#00838F" />
+      ) : (
+        <FlatList
+          data={professoresPaginados}
+          keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Text style={styles.nome}>{item.nome}</Text>
+              <Text style={styles.disciplina}>{item.materia}</Text>
+
+              <View style={styles.botoesLinha}>
+                <TouchableOpacity
+                  style={[styles.botao, styles.botaoEditar]}
+                  onPress={() =>
+                    navigation.replace('EditarProfessor', {
+                      id: item.id,
+                      nome: item.nome,
+                      materia: item.materia,
+                    })
+                  }
+                >
+                  <Text style={styles.textoBotao}>Editar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.botao, styles.botaoExcluir]}
+                  onPress={() => deletarProfessor(item.id)}
+                >
+                  <Text style={styles.textoBotao}>Excluir</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
 
       <View style={styles.paginacao}>
         <TouchableOpacity
