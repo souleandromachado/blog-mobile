@@ -26,7 +26,7 @@ export default function AlunosScreen({ navigation }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Home',
+      title: 'Lista de Alunos',
       headerStyle: {
         backgroundColor: '#F5E1C5',
       },
@@ -85,7 +85,7 @@ export default function AlunosScreen({ navigation }) {
               <TouchableOpacity
                 style={[styles.botao, styles.botaoEditar]}
                 onPress={() =>
-                  navigation.navigate('EditarAluno', { aluno: item })
+                  navigation.replace('EditarAluno', { aluno: item })
                 }
               >
                 <Text style={styles.textoBotao}>Editar</Text>

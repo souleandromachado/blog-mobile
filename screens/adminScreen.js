@@ -6,7 +6,7 @@ export default function AdminScreen({ route, navigation }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Home',
+      title: 'Administrar Posts',
       headerStyle: {
         backgroundColor: '#F5E1C5',
       },
@@ -49,7 +49,7 @@ export default function AdminScreen({ route, navigation }) {
               <TouchableOpacity
                 style={[styles.botao, styles.botaoEditar]}
                 onPress={() =>
-                  navigation.navigate('EditPost', {
+                  navigation.replace('EditPost', {
                     titulo: item.titulo,
                     autor: item.autor,
                     conteudo: item.conteudo,

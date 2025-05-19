@@ -11,7 +11,7 @@ export default function EditPostScreen({ route, navigation }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Lista de Posts',
+      title: 'Editar postagen',
       headerStyle: {
         backgroundColor: '#F5E1C5',
       },
@@ -66,7 +66,7 @@ export default function EditPostScreen({ route, navigation }) {
 
       <TouchableOpacity
         style={styles.botaoCancelar}
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => navigation.replace('Home')}
       >
         <Text style={styles.textoCancelar}>Cancelar</Text>
       </TouchableOpacity>

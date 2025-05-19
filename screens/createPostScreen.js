@@ -1,5 +1,6 @@
 import React, { useState, useLayoutEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import api from '../services/api';
 
 export default function CreatePostScreen({ navigation }) {
   const [titulo, setTitulo] = useState('');
@@ -8,7 +9,7 @@ export default function CreatePostScreen({ navigation }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Home',
+      title: 'Criar nova postagem',
       headerStyle: {
         backgroundColor: '#F5E1C5',
       },
@@ -19,14 +20,25 @@ export default function CreatePostScreen({ navigation }) {
     });
   }, [navigation]);
 
-  const criarPostagem = () => {
+  const criarPostagem = async () => {
     if (!titulo || !autor || !conteudo) {
-      alert('Preencha todos os campos!');
+      Alert.alert('Erro', 'Preencha todos os campos!');
       return;
     }
 
-    alert('Postagem criada com sucesso!');
-    navigation.goBack();
+    try {
+      await api.post('/posts', {
+        titulo,
+        autor,
+        conteudo,
+      });
+
+      Alert.alert('Sucesso', 'Postagem criada com sucesso!');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Erro ao criar postagem:', error);
+      Alert.alert('Erro', 'Não foi possível criar a postagem.');
+    }
   };
 
   return (
@@ -61,7 +73,7 @@ export default function CreatePostScreen({ navigation }) {
 
       <TouchableOpacity
         style={styles.botaoCancelar}
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => navigation.replace('Home')}
       >
         <Text style={styles.textoCancelar}>Cancelar</Text>
       </TouchableOpacity>

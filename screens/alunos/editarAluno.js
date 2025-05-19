@@ -54,7 +54,7 @@ export default function EditarAluno({ route, navigation }) {
 
       <TouchableOpacity
         style={styles.botaoCancelar}
-        onPress={() => navigation.navigate('AlunosScreen')}
+        onPress={() => navigation.replace('AlunosScreen')}
       >
         <Text style={styles.textoBotao}>Cancelar</Text>
       </TouchableOpacity>
