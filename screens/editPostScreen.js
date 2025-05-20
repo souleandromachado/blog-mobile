@@ -1,9 +1,9 @@
-// screens/EditPostScreen.js
 import React, { useState, useLayoutEffect } from 'react';
-import { View, TextInput, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, TextInput, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
+import axios from 'axios';
 
 export default function EditPostScreen({ route, navigation }) {
-  const { titulo: tituloInicial, autor: autorInicial, conteudo: conteudoInicial } = route.params;
+  const { id, titulo: tituloInicial, autor: autorInicial, conteudo: conteudoInicial } = route.params;
 
   const [titulo, setTitulo] = useState(tituloInicial);
   const [autor, setAutor] = useState(autorInicial);
@@ -11,7 +11,7 @@ export default function EditPostScreen({ route, navigation }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Editar postagen',
+      title: 'Editar postagem',
       headerStyle: {
         backgroundColor: '#F5E1C5',
       },
@@ -22,13 +22,25 @@ export default function EditPostScreen({ route, navigation }) {
     });
   }, [navigation]);
 
-  const salvarEdicao = () => {
+  const salvarEdicao = async () => {
     if (!titulo || !autor || !conteudo) {
-      alert('Preencha todos os campos!');
+      Alert.alert('Atenção', 'Preencha todos os campos!');
       return;
     }
-    alert('Postagem atualizada!');
-    navigation.goBack();
+
+    try {
+      await axios.put(`https://blog-api-latest-unqs.onrender.com/posts/${id}`, {
+        titulo,
+        autor,
+        conteudo,
+      });
+
+      Alert.alert('Sucesso', 'Postagem atualizada com sucesso!');
+      navigation.replace('AdminScreen');
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Erro', 'Não foi possível atualizar a postagem.');
+    }
   };
 
   return (
@@ -66,13 +78,14 @@ export default function EditPostScreen({ route, navigation }) {
 
       <TouchableOpacity
         style={styles.botaoCancelar}
-        onPress={() => navigation.replace('Home')}
+        onPress={() => navigation.replace('AdminScreen')}
       >
         <Text style={styles.textoCancelar}>Cancelar</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

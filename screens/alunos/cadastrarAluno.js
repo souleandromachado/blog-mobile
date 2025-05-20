@@ -1,32 +1,56 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';
 
 export default function CadastrarAluno({ navigation }) {
   const [nome, setNome] = useState('');
-  const [turma, setTurma] = useState('');
+  const [curso, setCurso] = useState('');
+  const [login, setLogin] = useState('');
+  const [senha, setSenha] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Cadastro de alunos',
-      headerStyle: {
-        backgroundColor: '#F5E1C5',
-      },
-      headerTitleStyle: {
-        color: '#00838F',
-        fontWeight: 'bold',
-      },
+      headerStyle: { backgroundColor: '#F5E1C5' },
+      headerTitleStyle: { color: '#00838F', fontWeight: 'bold' },
     });
   }, [navigation]);
 
-  const cadastrar = () => {
-    if (!nome.trim() || !disciplina.trim() || !email.trim() || !senha.trim()) {
+  const cadastrar = async () => {
+    if (!nome.trim() || !curso.trim() || !login.trim() || !senha.trim()) {
       Alert.alert('Erro', 'Preencha todos os campos.');
       return;
     }
 
-    // Aqui você faria o POST para a API
-    Alert.alert('Sucesso', 'Professor cadastrado com sucesso!');
-    navigation.goBack(); // Volta para ProfessoresScreen
+    try {
+      await axios.post(
+        'https://blog-api-latest-unqs.onrender.com/alunos',
+        {
+          nome: nome.trim(),
+          curso: curso.trim(),
+          login: login.trim(),
+          senha: senha.trim(),
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      Alert.alert('Sucesso', 'Aluno cadastrado com sucesso!');
+      setNome('');
+      setCurso('');
+      setLogin('');
+      setSenha('');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Home' }],
+      });
+    } catch (error) {
+      console.error('Erro ao cadastrar aluno:', error?.response?.data || error.message);
+      Alert.alert('Erro', 'Não foi possível cadastrar o aluno.');
+    }
   };
 
   return (
@@ -42,9 +66,25 @@ export default function CadastrarAluno({ navigation }) {
 
       <TextInput
         style={styles.input}
-        placeholder="Turma"
-        value={turma}
-        onChangeText={setTurma}
+        placeholder="Curso"
+        value={curso}
+        onChangeText={setCurso}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Login"
+        value={login}
+        onChangeText={setLogin}
+        autoCapitalize="none"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Senha"
+        value={senha}
+        onChangeText={setSenha}
+        secureTextEntry
       />
 
       <TouchableOpacity style={styles.botaoSalvar} onPress={cadastrar}>
@@ -53,7 +93,13 @@ export default function CadastrarAluno({ navigation }) {
 
       <TouchableOpacity
         style={styles.botaoCancelar}
-        onPress={() => navigation.goBack()}>
+        onPress={() =>
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          })
+        }
+      >
         <Text style={styles.textoBotao}>Cancelar</Text>
       </TouchableOpacity>
     </View>

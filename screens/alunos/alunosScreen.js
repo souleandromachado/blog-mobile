@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,23 +6,16 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  RefreshControl,
 } from 'react-native';
-
-const alunosExemplo = [
-  { id: '1', nome: 'Lucas Silva' },
-  { id: '2', nome: 'Fernanda Costa' },
-  { id: '3', nome: 'Rafael Lima' },
-  { id: '4', nome: 'Juliana Rocha' },
-  { id: '5', nome: 'Carlos Eduardo' },
-  { id: '6', nome: 'Mariana Alves' },
-  // Adicione mais para testar paginação
-];
+import axios from 'axios';
 
 const ITEMS_POR_PAGINA = 4;
 
 export default function AlunosScreen({ navigation }) {
-  const [alunos, setAlunos] = useState(alunosExemplo);
+  const [alunos, setAlunos] = useState([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -38,6 +31,24 @@ export default function AlunosScreen({ navigation }) {
     });
   }, [navigation]);
 
+  const buscarAlunos = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const response = await axios.get('https://blog-api-latest-unqs.onrender.com/alunos');
+      setAlunos(response.data); // Assumindo que o retorno é array de alunos com id, nome e curso
+      setPaginaAtual(1); // Reseta para página 1 ao atualizar dados
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível buscar os alunos.');
+      console.error(error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    buscarAlunos();
+  }, [buscarAlunos]);
+
   const deletarAluno = (id) => {
     Alert.alert(
       'Confirmar exclusão',
@@ -46,8 +57,16 @@ export default function AlunosScreen({ navigation }) {
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Excluir',
-          onPress: () =>
-            setAlunos((prev) => prev.filter((aluno) => aluno.id !== id)),
+          onPress: async () => {
+            try {
+              await axios.delete(`https://blog-api-latest-unqs.onrender.com/alunos/${id}`);
+              Alert.alert('Sucesso', 'Aluno excluído.');
+              buscarAlunos();
+            } catch (error) {
+              Alert.alert('Erro', 'Não foi possível excluir o aluno.');
+              console.error(error);
+            }
+          },
           style: 'destructive',
         },
       ]
@@ -76,23 +95,27 @@ export default function AlunosScreen({ navigation }) {
       <Text style={styles.titulo}>Lista de Alunos</Text>
       <FlatList
         data={alunosPaginados}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={buscarAlunos} />
+        }
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.nome}>{item.nome}</Text>
+            <Text style={styles.curso}>{item.curso}</Text>
 
             <View style={styles.botoesLinha}>
               <TouchableOpacity
                 style={[styles.botao, styles.botaoEditar]}
                 onPress={() =>
-                  navigation.replace('EditarAluno', { aluno: item })
+                  navigation.navigate('EditarAluno', { aluno: item, onGoBack: buscarAlunos })
                 }
               >
                 <Text style={styles.textoBotao}>Editar</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.botao, styles.botaoExcluir]}
-                onPress={() => deletarAluno(item.id)}
+                onPress={() => deletarAluno(item._id)}
               >
                 <Text style={styles.textoBotao}>Excluir</Text>
               </TouchableOpacity>
@@ -152,6 +175,12 @@ const styles = StyleSheet.create({
   nome: {
     fontSize: 16,
     color: '#333',
+    fontWeight: 'bold',
+  },
+  curso: {
+    fontSize: 14,
+    color: '#555',
+    marginTop: 2,
   },
   botoesLinha: {
     flexDirection: 'row',

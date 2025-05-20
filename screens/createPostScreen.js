@@ -34,7 +34,7 @@ export default function CreatePostScreen({ navigation }) {
       });
 
       Alert.alert('Sucesso', 'Postagem criada com sucesso!');
-      navigation.goBack();
+      navigation.replace('Home');
     } catch (error) {
       console.error('Erro ao criar postagem:', error);
       Alert.alert('Erro', 'Não foi possível criar a postagem.');

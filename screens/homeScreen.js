@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   TextInput,
 } from 'react-native';
-import { getPosts, deletePost } from '../services/api';  // IMPORTA FUNÇÕES DO API.JS
+import { getPosts, deletePost } from '../services/api';
 
 export default function HomeScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
@@ -74,7 +74,6 @@ export default function HomeScreen({ navigation }) {
     });
   }, [navigation, isLogado]);
 
-  // Função atualizada para deletar via api.js
   const handleDeletarPost = async (id) => {
     const resultado = await deletePost(id);
     if (resultado.success) {

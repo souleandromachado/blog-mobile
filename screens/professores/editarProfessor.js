@@ -7,13 +7,21 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import axios from 'axios';
 
 export default function EditarProfessor({ route, navigation }) {
-  const { id, nome: nomeInicial, disciplina: disciplinaInicial } = route.params;
+  const {
+    id,
+    nome: nomeInicial,
+    disciplina: disciplinaInicial,
+    login: loginInicial = '',
+    senha: senhaInicial = '',
+  } = route.params;
 
   const [nome, setNome] = useState(nomeInicial);
   const [disciplina, setDisciplina] = useState(disciplinaInicial);
-
+  const [login, setLogin] = useState(loginInicial);
+  const [senha, setSenha] = useState(senhaInicial);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -29,15 +37,29 @@ export default function EditarProfessor({ route, navigation }) {
     });
   }, [navigation]);
 
-  const salvarAlteracoes = () => {
-    if (!nome.trim() || !disciplina.trim()) {
+  const salvarAlteracoes = async () => {
+    if (!nome.trim() || !disciplina.trim() || !login.trim() || !senha.trim()) {
       Alert.alert('Erro', 'Preencha todos os campos.');
       return;
     }
 
-    // Aqui você faria o PUT ou PATCH para a API
-    Alert.alert('Sucesso', 'Dados atualizados com sucesso!');
-    navigation.goBack();
+    try {
+      await axios.put(`https://blog-api-latest-unqs.onrender.com/professores/${id}`, {
+        nome,
+        materia: disciplina,
+        login,
+        senha,
+      });
+
+      Alert.alert('Sucesso', 'Dados atualizados com sucesso!');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'ProfessoresScreen' }],
+      });
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível atualizar o professor.');
+      console.error(error);
+    }
   };
 
   return (
@@ -58,11 +80,32 @@ export default function EditarProfessor({ route, navigation }) {
         placeholder="Digite a disciplina"
       />
 
+      <Text style={styles.label}>Login:</Text>
+      <TextInput
+        style={styles.input}
+        value={login}
+        onChangeText={setLogin}
+        placeholder="Digite o login"
+        autoCapitalize="none"
+      />
+
+      <Text style={styles.label}>Senha:</Text>
+      <TextInput
+        style={styles.input}
+        value={senha}
+        onChangeText={setSenha}
+        placeholder="Digite a senha"
+        secureTextEntry
+      />
+
       <TouchableOpacity style={styles.botaoSalvar} onPress={salvarAlteracoes}>
         <Text style={styles.textoBotao}>Salvar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.botaoCancelar} onPress={() => navigation.replace('ProfessoresScreen')}>
+      <TouchableOpacity
+        style={styles.botaoCancelar}
+        onPress={() => navigation.replace('ProfessoresScreen')}
+      >
         <Text style={styles.textoBotao}>Cancelar</Text>
       </TouchableOpacity>
     </View>

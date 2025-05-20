@@ -56,7 +56,10 @@ export default function CadastrarProfessor({ navigation }) {
       if (response.status === 201 || response.status === 200) {
         Alert.alert('Sucesso', 'Professor cadastrado com sucesso!');
         limparCampos();
-        navigation.goBack();
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       } else {
         Alert.alert('Erro', 'Não foi possível cadastrar o professor.');
       }
@@ -125,7 +128,12 @@ export default function CadastrarProfessor({ navigation }) {
 
       <TouchableOpacity
         style={styles.botaoCancelar}
-        onPress={() => navigation.goBack()}
+        onPress={() => {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          });
+        }}
         disabled={loading}
       >
         <Text style={styles.textoBotao}>Cancelar</Text>
