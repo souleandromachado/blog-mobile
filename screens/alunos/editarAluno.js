@@ -7,15 +7,20 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import axios from 'axios';
 
 export default function EditarAluno({ route, navigation }) {
   const { aluno } = route.params;
+  console.log('Aluno recebido:', aluno);
 
   const [nome, setNome] = useState(aluno.nome);
+  const [curso, setCurso] = useState(aluno.curso || '');
+  const [login, setLogin] = useState(aluno.login || '');
+  const [senha, setSenha] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'Lista de Alunos',
+      title: 'Editar Aluno',
       headerStyle: {
         backgroundColor: '#F5E1C5',
       },
@@ -27,16 +32,39 @@ export default function EditarAluno({ route, navigation }) {
     });
   }, [navigation]);
 
-  const salvarAlteracoes = () => {
-    if (!nome.trim()) {
-      Alert.alert('Erro', 'Preencha o nome do aluno.');
+  const salvarAlteracoes = async () => {
+    if (!nome.trim() || !login.trim() || !senha.trim()) {
+      Alert.alert('Erro', 'Preencha todos os campos obrigatórios.');
       return;
     }
 
-    // Aqui você faria o PUT ou PATCH para a API
-    Alert.alert('Sucesso', 'Dados atualizados com sucesso!');
-    navigation.goBack();
+    try {
+      await axios.put(
+        `https://blog-api-latest-unqs.onrender.com/alunos/${aluno._id}`,
+        {
+          nome: nome.trim(),
+          curso: curso.trim(),
+          login: login.trim(),
+          senha: senha.trim(),
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      Alert.alert('Sucesso', 'Dados atualizados com sucesso!');
+      if (route.params?.onGoBack) {
+        route.params.onGoBack();
+      }
+      navigation.goBack();
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+      Alert.alert('Erro', 'Não foi possível atualizar os dados.');
+    }
   };
+
 
   return (
     <View style={styles.container}>
@@ -48,13 +76,39 @@ export default function EditarAluno({ route, navigation }) {
         placeholder="Digite o nome do aluno"
       />
 
+      <Text style={styles.label}>Curso:</Text>
+      <TextInput
+        style={styles.input}
+        value={curso}
+        onChangeText={setCurso}
+        placeholder="Digite o curso do aluno"
+      />
+
+      <Text style={styles.label}>Login:</Text>
+      <TextInput
+        style={styles.input}
+        value={login}
+        onChangeText={setLogin}
+        placeholder="Digite o login do aluno"
+        autoCapitalize="none"
+      />
+
+      <Text style={styles.label}>Senha:</Text>
+      <TextInput
+        style={styles.input}
+        value={senha}
+        onChangeText={setSenha}
+        placeholder="Digite a senha do aluno"
+        secureTextEntry
+      />
+
       <TouchableOpacity style={styles.botaoSalvar} onPress={salvarAlteracoes}>
         <Text style={styles.textoBotao}>Salvar</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.botaoCancelar}
-        onPress={() => navigation.replace('AlunosScreen')}
+        onPress={() => navigation.goBack()}
       >
         <Text style={styles.textoBotao}>Cancelar</Text>
       </TouchableOpacity>

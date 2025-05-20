@@ -1,8 +1,29 @@
-import React, {useLayoutEffect} from 'react';
+import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';
 
-export default function AdminScreen({ route, navigation }) {
-  const { posts, deletarPost } = route.params;
+export default function AdminScreen({ navigation }) {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Função para carregar os posts da API
+  const carregarPosts = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('https://blog-api-latest-unqs.onrender.com/posts');
+      setPosts(response.data);
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao carregar posts.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Chama carregarPosts assim que o componente monta
+  useEffect(() => {
+    carregarPosts();
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -32,11 +53,24 @@ export default function AdminScreen({ route, navigation }) {
     );
   };
 
+  // Função que exclui post na API e atualiza o estado
+  const deletarPost = async (id) => {
+    try {
+      await axios.delete(`https://blog-api-latest-unqs.onrender.com/posts/${id}`);
+      Alert.alert('Sucesso', 'Post deletado com sucesso!');
+      // Atualiza estado removendo o post deletado
+      setPosts((postsAtuais) => postsAtuais.filter(post => post._id !== id));
+    } catch (error) {
+      console.error('Erro ao deletar post:', error);
+      Alert.alert('Erro', 'Falha ao excluir o post.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         data={posts}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.titulo}>{item.titulo}</Text>
@@ -50,6 +84,7 @@ export default function AdminScreen({ route, navigation }) {
                 style={[styles.botao, styles.botaoEditar]}
                 onPress={() =>
                   navigation.replace('EditPost', {
+                    id: item._id,
                     titulo: item.titulo,
                     autor: item.autor,
                     conteudo: item.conteudo,
@@ -61,7 +96,7 @@ export default function AdminScreen({ route, navigation }) {
 
               <TouchableOpacity
                 style={[styles.botao, styles.botaoExcluir]}
-                onPress={() => confirmarExclusao(item.id)}
+                onPress={() => confirmarExclusao(item._id)}
               >
                 <Text style={styles.textoBotao}>Excluir</Text>
               </TouchableOpacity>
@@ -69,6 +104,8 @@ export default function AdminScreen({ route, navigation }) {
           </View>
         )}
         ListEmptyComponent={<Text style={{ marginTop: 20 }}>Nenhuma postagem encontrada.</Text>}
+        refreshing={loading}
+        onRefresh={carregarPosts}
       />
     </View>
   );

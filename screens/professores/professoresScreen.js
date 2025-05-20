@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useEffect, useState } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -33,11 +33,11 @@ export default function ProfessoresScreen({ navigation }) {
     });
   }, [navigation]);
 
-useFocusEffect(
-  useCallback(() => {
-    carregarProfessores();
-  }, [])
-);
+  useFocusEffect(
+    useCallback(() => {
+      carregarProfessores();
+    }, [])
+  );
 
   const carregarProfessores = async () => {
     setLoading(true);
@@ -52,7 +52,7 @@ useFocusEffect(
     }
   };
 
-  const deletarProfessor = (id) => {
+  const deletarProfessor = async (id) => {
     Alert.alert(
       'Confirmar exclusão',
       'Tem certeza que deseja excluir este professor?',
@@ -60,9 +60,17 @@ useFocusEffect(
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Excluir',
-          onPress: () =>
-            setProfessores((prev) => prev.filter((prof) => prof.id !== id)),
           style: 'destructive',
+          onPress: async () => {
+            try {
+              await axios.delete(`${API_URL}/${id}`);
+              await carregarProfessores();
+              Alert.alert('Sucesso', 'Professor excluído com sucesso.');
+            } catch (erro) {
+              console.error('Erro ao excluir professor:', erro);
+              Alert.alert('Erro', 'Não foi possível excluir o professor.');
+            }
+          },
         },
       ]
     );
@@ -94,7 +102,9 @@ useFocusEffect(
       ) : (
         <FlatList
           data={professoresPaginados}
-          keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
+          keyExtractor={(item) =>
+            item._id ? item._id.toString() : Math.random().toString()
+          }
           renderItem={({ item }) => (
             <View style={styles.card}>
               <Text style={styles.nome}>{item.nome}</Text>
@@ -105,9 +115,11 @@ useFocusEffect(
                   style={[styles.botao, styles.botaoEditar]}
                   onPress={() =>
                     navigation.replace('EditarProfessor', {
-                      id: item.id,
+                      id: item._id,
                       nome: item.nome,
                       materia: item.materia,
+                      login: item.login,
+                      senha: item.senha,
                     })
                   }
                 >
@@ -115,7 +127,7 @@ useFocusEffect(
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.botao, styles.botaoExcluir]}
-                  onPress={() => deletarProfessor(item.id)}
+                  onPress={() => deletarProfessor(item._id)}
                 >
                   <Text style={styles.textoBotao}>Excluir</Text>
                 </TouchableOpacity>
@@ -129,10 +141,7 @@ useFocusEffect(
         <TouchableOpacity
           onPress={paginaAnterior}
           disabled={paginaAtual === 1}
-          style={[
-            styles.paginaBotao,
-            paginaAtual === 1 && styles.botaoDesativado,
-          ]}
+          style={[styles.paginaBotao, paginaAtual === 1 && styles.botaoDesativado]}
         >
           <Text style={styles.textoBotao}>Anterior</Text>
         </TouchableOpacity>
