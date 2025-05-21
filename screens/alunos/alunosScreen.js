@@ -34,7 +34,7 @@ export default function AlunosScreen({ navigation }) {
   const buscarAlunos = useCallback(async () => {
     setRefreshing(true);
     try {
-      const response = await axios.get('https://blog-api-latest-unqs.onrender.com/alunos');
+      const response = await axios.get('https://blog-api-ld0z.onrender.comalunos');
       setAlunos(response.data); // Assumindo que o retorno é array de alunos com id, nome e curso
       setPaginaAtual(1); // Reseta para página 1 ao atualizar dados
     } catch (error) {
@@ -59,7 +59,7 @@ export default function AlunosScreen({ navigation }) {
           text: 'Excluir',
           onPress: async () => {
             try {
-              await axios.delete(`https://blog-api-latest-unqs.onrender.com/alunos/${id}`);
+              await axios.delete(`https://blog-api-ld0z.onrender.comalunos/${id}`);
               Alert.alert('Sucesso', 'Aluno excluído.');
               buscarAlunos();
             } catch (error) {

@@ -46,7 +46,7 @@ export default function CadastrarProfessor({ navigation }) {
 
     setLoading(true);
     try {
-      const response = await axios.post('https://blog-api-latest-unqs.onrender.com/professores', {
+      const response = await axios.post('https://blog-api-ld0z.onrender.comprofessores', {
         nome,
         materia,
         login,

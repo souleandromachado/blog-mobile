@@ -44,7 +44,7 @@ export default function EditarProfessor({ route, navigation }) {
     }
 
     try {
-      await axios.put(`https://blog-api-latest-unqs.onrender.com/professores/${id}`, {
+      await axios.put(`https://blog-api-ld0z.onrender.comprofessores/${id}`, {
         nome,
         materia: disciplina,
         login,

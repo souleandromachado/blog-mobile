@@ -24,7 +24,7 @@ export default function CadastrarAluno({ navigation }) {
 
     try {
       await axios.post(
-        'https://blog-api-latest-unqs.onrender.com/alunos',
+        'https://blog-api-ld0z.onrender.comalunos',
         {
           nome: nome.trim(),
           curso: curso.trim(),

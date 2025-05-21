@@ -10,7 +10,7 @@ export default function AdminScreen({ navigation }) {
   const carregarPosts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://blog-api-latest-unqs.onrender.com/posts');
+      const response = await axios.get('https://blog-api-ld0z.onrender.composts');
       setPosts(response.data);
     } catch (error) {
       Alert.alert('Erro', 'Falha ao carregar posts.');
@@ -56,7 +56,7 @@ export default function AdminScreen({ navigation }) {
   // Função que exclui post na API e atualiza o estado
   const deletarPost = async (id) => {
     try {
-      await axios.delete(`https://blog-api-latest-unqs.onrender.com/posts/${id}`);
+      await axios.delete(`https://blog-api-ld0z.onrender.composts/${id}`);
       Alert.alert('Sucesso', 'Post deletado com sucesso!');
       // Atualiza estado removendo o post deletado
       setPosts((postsAtuais) => postsAtuais.filter(post => post._id !== id));

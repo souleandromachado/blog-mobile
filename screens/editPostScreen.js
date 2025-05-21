@@ -29,7 +29,7 @@ export default function EditPostScreen({ route, navigation }) {
     }
 
     try {
-      await axios.put(`https://blog-api-latest-unqs.onrender.com/posts/${id}`, {
+      await axios.put(`https://blog-api-ld0z.onrender.composts/${id}`, {
         titulo,
         autor,
         conteudo,

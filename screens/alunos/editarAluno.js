@@ -40,7 +40,7 @@ export default function EditarAluno({ route, navigation }) {
 
     try {
       await axios.put(
-        `https://blog-api-latest-unqs.onrender.com/alunos/${aluno._id}`,
+        `https://blog-api-ld0z.onrender.comalunos/${aluno._id}`,
         {
           nome: nome.trim(),
           curso: curso.trim(),

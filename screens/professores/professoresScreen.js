@@ -19,7 +19,7 @@ export default function ProfessoresScreen({ navigation }) {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = 'https://blog-api-latest-unqs.onrender.com/professores';
+  const API_URL = 'https://blog-api-ld0z.onrender.comprofessores';
 
   useLayoutEffect(() => {
     navigation.setOptions({
