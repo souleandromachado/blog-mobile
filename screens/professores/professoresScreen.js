@@ -84,7 +84,7 @@ export default function ProfessoresScreen({ navigation }) {
           text: 'Excluir',
           onPress: async () => {
             try {
-              await axios.delete(`${API_URL}/${id}`);
+              await axios.delete(`${API_URL}/professores/${id}`);
               await carregarProfessores();
               Alert.alert('Sucesso', 'Professor excluído com sucesso.');
             } catch (erro) {

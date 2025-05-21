@@ -154,7 +154,7 @@ export default function HomeScreen({ navigation, route }) {
           <TouchableOpacity
             onPress={() =>
               navigation.replace('Post', {
-                id: item.id,
+                id: item._id,
                 titulo: item.titulo,
                 autor: item.autor,
                 conteudo: item.conteudo,

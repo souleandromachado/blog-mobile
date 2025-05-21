@@ -19,33 +19,31 @@ export default function CadastrarAluno({ navigation }) {
   }, [navigation]);
 
   const cadastrar = async () => {
-    if (!nome.trim() || !curso.trim() || !login.trim() || !senha.trim()) {
+    if (!nome.trim() || !curso.trim() || !matricula.trim()) {
       Alert.alert('Erro', 'Preencha todos os campos.');
       return;
     }
 
     try {
-      await axios.post(
-        `${API_URL}/alunos`,
+      const response = await axios.post(`${API_URL}/alunos`,
         {
           nome: nome.trim(),
           curso: curso.trim(),
           matricula: matricula.trim(),
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+        });
 
-      Alert.alert('Sucesso', 'Aluno cadastrado com sucesso!');
-      setNome('');
-      setCurso('');
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
+        if (response.status === 201 || response.status === 200) {
+          Alert.alert('Sucesso', 'Aluno cadastrado com sucesso!');
+          setNome('');
+          setCurso('');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          });
+        } else {
+          Alert.alert('Erro', 'Não foi possível cadastrar o aluno.');
+        }
+
     } catch (error) {
       console.error('Erro ao cadastrar aluno:', error?.response?.data || error.message);
       Alert.alert('Erro', 'Não foi possível cadastrar o aluno.');
@@ -75,7 +73,6 @@ export default function CadastrarAluno({ navigation }) {
         placeholder="Matrícula"
         value={matricula}
         onChangeText={setMatricula}
-        autoCapitalize="none"
       />
 
       <TouchableOpacity style={styles.botaoSalvar} onPress={cadastrar}>

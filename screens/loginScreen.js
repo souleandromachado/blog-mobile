@@ -73,6 +73,15 @@ export default function LoginScreen({ navigation, route }) {
         <TouchableOpacity style={styles.botao} onPress={handleLogin}>
           <Text style={styles.textoBotao}>Entrar</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.botaoCancelar} 
+          onPress = {() => navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          })}>
+          <Text style={styles.textoBotao}>Cancelar</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );
@@ -108,6 +117,13 @@ const styles = StyleSheet.create({
   botao: {
     backgroundColor: '#4CAF50',
     padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+    botaoCancelar: {
+    marginTop: 10,
+    backgroundColor: '#DB1919',
+    paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
   },
