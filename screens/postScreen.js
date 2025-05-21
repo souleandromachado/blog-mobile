@@ -50,7 +50,7 @@ export default function PostScreen({ route, navigation }) {
           style: 'destructive',
           onPress: () => {
             onDelete(id);
-            navigation.goBack();
+            navigation.replace('Home');
           },
         },
       ]

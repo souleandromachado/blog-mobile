@@ -11,7 +11,6 @@ import axios from 'axios';
 
 export default function EditarAluno({ route, navigation }) {
   const { aluno } = route.params;
-  console.log('Aluno recebido:', aluno);
 
   const [nome, setNome] = useState(aluno.nome);
   const [curso, setCurso] = useState(aluno.curso || '');
@@ -34,12 +33,13 @@ export default function EditarAluno({ route, navigation }) {
   }, [navigation]);
 
   const salvarAlteracoes = async () => {
-    if (!nome.trim() || !login.trim() || !senha.trim()) {
+    if (!nome.trim() || !curso.trim() || !matricula.trim()) {
       Alert.alert('Erro', 'Preencha todos os campos obrigatórios.');
       return;
     }
 
     try {
+      console.log(aluno._id);
       await axios.put(
         `${API_URL}/alunos/${aluno._id}`,
         {
