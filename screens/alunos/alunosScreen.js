@@ -9,13 +9,17 @@ import {
   RefreshControl,
 } from 'react-native';
 import axios from 'axios';
+import { useAuth } from '../../authContext';
 
 const ITEMS_POR_PAGINA = 4;
 
 export default function AlunosScreen({ navigation }) {
+  const { isAuthenticated } = useAuth(); 
   const [alunos, setAlunos] = useState([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
+
+  const API_URL = 'https://blog-api-ld0z.onrender.com';
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -28,13 +32,34 @@ export default function AlunosScreen({ navigation }) {
         fontWeight: 'bold',
         fontSize: 20,
       },
+      headerLeft: () => (
+        <View style={{ paddingRight: 10 }}>
+          <TouchableOpacity
+            onPress={() => {
+                navigation.replace('Home');
+            }}
+            style={{
+              backgroundColor: '#4CAF50',
+              paddingVertical: 6,
+              marginHorizontal: -3,
+              paddingHorizontal: 2,
+              borderRadius: 3,
+              
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
+               Voltar 
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ),
     });
   }, [navigation]);
 
   const buscarAlunos = useCallback(async () => {
     setRefreshing(true);
     try {
-      const response = await axios.get('https://blog-api-ld0z.onrender.comalunos');
+      const response = await axios.get(`${API_URL}/alunos`);
       setAlunos(response.data); // Assumindo que o retorno é array de alunos com id, nome e curso
       setPaginaAtual(1); // Reseta para página 1 ao atualizar dados
     } catch (error) {
@@ -59,7 +84,7 @@ export default function AlunosScreen({ navigation }) {
           text: 'Excluir',
           onPress: async () => {
             try {
-              await axios.delete(`https://blog-api-ld0z.onrender.comalunos/${id}`);
+              await axios.delete(`${API_URL}/alunos/${id}`);
               Alert.alert('Sucesso', 'Aluno excluído.');
               buscarAlunos();
             } catch (error) {
@@ -95,7 +120,7 @@ export default function AlunosScreen({ navigation }) {
       <Text style={styles.titulo}>Lista de Alunos</Text>
       <FlatList
         data={alunosPaginados}
-        keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
+        keyExtractor={(item) => (item._id ? item._id.toString() : Math.random().toString())}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={buscarAlunos} />
         }
@@ -104,6 +129,7 @@ export default function AlunosScreen({ navigation }) {
             <Text style={styles.nome}>{item.nome}</Text>
             <Text style={styles.curso}>{item.curso}</Text>
 
+          { isAuthenticated && (
             <View style={styles.botoesLinha}>
               <TouchableOpacity
                 style={[styles.botao, styles.botaoEditar]}
@@ -120,6 +146,7 @@ export default function AlunosScreen({ navigation }) {
                 <Text style={styles.textoBotao}>Excluir</Text>
               </TouchableOpacity>
             </View>
+          )}
           </View>
         )}
       />

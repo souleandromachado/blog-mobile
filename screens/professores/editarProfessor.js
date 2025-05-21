@@ -13,7 +13,7 @@ export default function EditarProfessor({ route, navigation }) {
   const {
     id,
     nome: nomeInicial,
-    disciplina: disciplinaInicial,
+    materia: disciplinaInicial,
     login: loginInicial = '',
     senha: senhaInicial = '',
   } = route.params;
@@ -23,10 +23,12 @@ export default function EditarProfessor({ route, navigation }) {
   const [login, setLogin] = useState(loginInicial);
   const [senha, setSenha] = useState(senhaInicial);
 
+  const API_URL = 'https://blog-api-ld0z.onrender.com';
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Editar Professor',
-      headerStyle: {
+      headerStyle: { 
         backgroundColor: '#F5E1C5',
       },
       headerTitleStyle: {
@@ -44,7 +46,7 @@ export default function EditarProfessor({ route, navigation }) {
     }
 
     try {
-      await axios.put(`https://blog-api-ld0z.onrender.comprofessores/${id}`, {
+      await axios.put(`${API_URL}/professores/${id}`, {
         nome,
         materia: disciplina,
         login,

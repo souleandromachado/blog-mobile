@@ -1,12 +1,14 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
+import {  } from '../../authContext';
 
 export default function CadastrarAluno({ navigation }) {
   const [nome, setNome] = useState('');
   const [curso, setCurso] = useState('');
-  const [login, setLogin] = useState('');
-  const [senha, setSenha] = useState('');
+  const [matricula, setMatricula] = useState('');
+
+  const API_URL = 'https://blog-api-ld0z.onrender.com';
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -24,12 +26,11 @@ export default function CadastrarAluno({ navigation }) {
 
     try {
       await axios.post(
-        'https://blog-api-ld0z.onrender.comalunos',
+        `${API_URL}/alunos`,
         {
           nome: nome.trim(),
           curso: curso.trim(),
-          login: login.trim(),
-          senha: senha.trim(),
+          matricula: matricula.trim(),
         },
         {
           headers: {
@@ -41,8 +42,6 @@ export default function CadastrarAluno({ navigation }) {
       Alert.alert('Sucesso', 'Aluno cadastrado com sucesso!');
       setNome('');
       setCurso('');
-      setLogin('');
-      setSenha('');
       navigation.reset({
         index: 0,
         routes: [{ name: 'Home' }],
@@ -73,18 +72,10 @@ export default function CadastrarAluno({ navigation }) {
 
       <TextInput
         style={styles.input}
-        placeholder="Login"
-        value={login}
-        onChangeText={setLogin}
+        placeholder="Matrícula"
+        value={matricula}
+        onChangeText={setMatricula}
         autoCapitalize="none"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        value={senha}
-        onChangeText={setSenha}
-        secureTextEntry
       />
 
       <TouchableOpacity style={styles.botaoSalvar} onPress={cadastrar}>

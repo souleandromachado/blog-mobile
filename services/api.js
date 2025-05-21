@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_URL = 'https://blog-api-ld0z.onrender.com';
+
 const api = axios.create({
-  baseURL: 'https://blog-api-ld0z.onrender.com',
+  baseURL: API_URL ,
 });
 
 export const getPosts = async () => {

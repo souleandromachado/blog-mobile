@@ -10,12 +10,13 @@ import {
   TextInput,
 } from 'react-native';
 import { getPosts, deletePost } from '../services/api';
+import { useAuth } from '../authContext';
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ navigation, route }) { 
+  const { isAuthenticated, logout } = useAuth();
   const [posts, setPosts] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState('');
-  const [isLogado, setIsLogado] = useState(true);
 
   const buscarPosts = async () => {
     setCarregando(true);
@@ -51,10 +52,10 @@ export default function HomeScreen({ navigation }) {
         <View style={{ paddingRight: 10 }}>
           <TouchableOpacity
             onPress={() => {
-              if (isLogado) {
-                setIsLogado(false);
+              if (isAuthenticated) {
+                logout();
               } else {
-                navigation.replace('Login', { setIsLogado });
+                navigation.replace('Login');
               }
             }}
             style={{
@@ -66,13 +67,13 @@ export default function HomeScreen({ navigation }) {
             }}
           >
             <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
-              {isLogado ? 'Sair' : 'Login'}
+              {isAuthenticated ? 'Sair' : 'Login'}
             </Text>
           </TouchableOpacity>
         </View>
       ),
     });
-  }, [navigation, isLogado]);
+}, [navigation, isAuthenticated]);
 
   const handleDeletarPost = async (id) => {
     const resultado = await deletePost(id);
@@ -103,25 +104,24 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {!isLogado && (
-        <View style={styles.botoesAlunosContainer}>
-          <TouchableOpacity
-            style={[styles.botaoCadastroAluno, styles.botaoLadoALado]}
-            onPress={() => navigation.replace('CadastrarAluno')}
-          >
-            <Text style={styles.botaoTexto}>+ Novo Aluno</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.botaoAlunos, styles.botaoLadoALado]}
-            onPress={() => navigation.replace('AlunosScreen')}
-          >
-            <Text style={styles.botaoTexto}>Alunos</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      <View style={styles.botoesAlunosContainer}>
+        <TouchableOpacity
+          style={[styles.botaoCadastroAluno, styles.botaoLadoALado]}
+          onPress={() => navigation.replace('CadastrarAluno')}
+        >
+          <Text style={styles.botaoTexto}>+ Novo Aluno</Text>
+        </TouchableOpacity>
 
-      {isLogado && (
+        <TouchableOpacity
+          style={[styles.botaoAlunos, styles.botaoLadoALado]}
+          onPress={() => navigation.replace('AlunosScreen')}
+        >
+          <Text style={styles.botaoTexto}>Alunos</Text>
+        </TouchableOpacity>
+      </View>
+      
+      {isAuthenticated && (
         <View style={styles.botoesProfessoresContainer}>
           <TouchableOpacity
             style={[styles.botaoCadastroProf, styles.botaoLadoALado]}
@@ -175,7 +175,7 @@ export default function HomeScreen({ navigation }) {
         )}
       />
 
-      {isLogado && (
+      {isAuthenticated && (
         <View style={styles.botoesContainer}>
           <TouchableOpacity
             style={[styles.botao, styles.botaoCriar]}

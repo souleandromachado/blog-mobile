@@ -15,8 +15,9 @@ export default function EditarAluno({ route, navigation }) {
 
   const [nome, setNome] = useState(aluno.nome);
   const [curso, setCurso] = useState(aluno.curso || '');
-  const [login, setLogin] = useState(aluno.login || '');
-  const [senha, setSenha] = useState('');
+  const [matricula, setMatricula] = useState(aluno.matricula || '');
+
+  const API_URL = 'https://blog-api-ld0z.onrender.com';
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -40,12 +41,11 @@ export default function EditarAluno({ route, navigation }) {
 
     try {
       await axios.put(
-        `https://blog-api-ld0z.onrender.comalunos/${aluno._id}`,
+        `${API_URL}/alunos/${aluno._id}`,
         {
           nome: nome.trim(),
           curso: curso.trim(),
-          login: login.trim(),
-          senha: senha.trim(),
+          matricula: matricula.trim(),
         },
         {
           headers: {
@@ -84,22 +84,13 @@ export default function EditarAluno({ route, navigation }) {
         placeholder="Digite o curso do aluno"
       />
 
-      <Text style={styles.label}>Login:</Text>
+      <Text style={styles.label}>Matricula:</Text>
       <TextInput
         style={styles.input}
-        value={login}
-        onChangeText={setLogin}
-        placeholder="Digite o login do aluno"
+        value={matricula}
+        onChangeText={setMatricula}
+        placeholder="Digite a Matricula do aluno"
         autoCapitalize="none"
-      />
-
-      <Text style={styles.label}>Senha:</Text>
-      <TextInput
-        style={styles.input}
-        value={senha}
-        onChangeText={setSenha}
-        placeholder="Digite a senha do aluno"
-        secureTextEntry
       />
 
       <TouchableOpacity style={styles.botaoSalvar} onPress={salvarAlteracoes}>

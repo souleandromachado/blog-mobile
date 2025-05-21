@@ -1,10 +1,14 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import axios from 'axios';
+import { useAuth } from '../authContext';
 
 export default function LoginScreen({ navigation, route }) {
-  const { setIsLogado } = route.params || {};
+  const { login } = useAuth();
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
+
+  const API_URL = 'https://blog-api-ld0z.onrender.com';
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -20,13 +24,29 @@ export default function LoginScreen({ navigation, route }) {
   }, [navigation]);
 
 
-  const handleLogin = () => {
-    if (usuario === 'professor' && senha === '1234') {
-      setIsLogado(true);
-      navigation.goBack();
-    } else {
-      Alert.alert('Erro', 'Usuário ou senha inválidos');
+  const handleLogin = async () => {
+    if (!usuario.trim() || !senha.trim()) {
+      Alert.alert('Erro', 'Preencha todos os campos.');
+      return;
     }
+
+    try {
+      const response = await axios.post(`${API_URL}/professores/auth`, {
+        login: usuario,
+        senha: senha,
+      });
+
+      if (response.status === 201 || response.status === 200) {
+        Alert.alert('Sucesso', 'Login Realizado com sucesso!');
+        login();
+        navigation.replace('Home');
+      } 
+    }
+      catch (error) {
+        console.error(error);
+        Alert.alert('Erro', 'Não foi possível realizar o login.');
+        logout();
+      }
   };
 
   return (

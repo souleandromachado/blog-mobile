@@ -9,6 +9,8 @@ export default function EditPostScreen({ route, navigation }) {
   const [autor, setAutor] = useState(autorInicial);
   const [conteudo, setConteudo] = useState(conteudoInicial);
 
+  const API_URL = 'https://blog-api-ld0z.onrender.com';
+  
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Editar postagem',
@@ -29,7 +31,7 @@ export default function EditPostScreen({ route, navigation }) {
     }
 
     try {
-      await axios.put(`https://blog-api-ld0z.onrender.composts/${id}`, {
+      await axios.put(`${API_URL}/posts/${id}`, {
         titulo,
         autor,
         conteudo,

@@ -17,6 +17,8 @@ export default function CadastrarProfessor({ navigation }) {
   const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false); // estado de loading
 
+  const API_URL = 'https://blog-api-ld0z.onrender.com';
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Cadastro de professores',
@@ -46,7 +48,7 @@ export default function CadastrarProfessor({ navigation }) {
 
     setLoading(true);
     try {
-      const response = await axios.post('https://blog-api-ld0z.onrender.comprofessores', {
+      const response = await axios.post(`${API_URL}/professores`, {
         nome,
         materia,
         login,

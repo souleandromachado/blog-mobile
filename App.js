@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './screens/homeScreen';
@@ -13,10 +13,13 @@ import EditarProfessor from './screens/professores/editarProfessor';
 import EditarAluno from './screens/alunos/editarAluno';
 import CadastrarProfessor from './screens/professores/cadastrarProfessor';
 import CadastrarAluno from './screens/alunos/cadastrarAluno';
+import { AuthProvider, useAuth } from './authContext';
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+function AppWithAuth() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
@@ -34,5 +37,13 @@ export default function App() {
         <Stack.Screen name="CadastrarAluno" component={CadastrarAluno} />
       </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppWithAuth />
+    </AuthProvider>
   );
 }

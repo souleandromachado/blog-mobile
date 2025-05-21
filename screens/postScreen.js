@@ -1,9 +1,10 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { useAuth } from '../authContext';
 
 export default function PostScreen({ route, navigation }) {
   const { id, titulo, autor, conteudo, onDelete } = route.params;
-  const [isLogado, setIsLogado] = useState(false); // Simule login
+    const { isAuthenticated, logout } = useAuth();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -15,6 +16,26 @@ export default function PostScreen({ route, navigation }) {
         color: '#00838F',
         fontWeight: 'bold',
       },
+      headerLeft: () => (
+        <View style={{ paddingRight: 10 }}>
+          <TouchableOpacity
+            onPress={() => {
+                navigation.replace('Home');
+            }}
+            style={{
+              backgroundColor: '#4CAF50',
+              paddingVertical: 6,
+              marginHorizontal: -3,
+              paddingHorizontal: 2,
+              borderRadius: 3,
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
+              Voltar
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ),
     });
   }, [navigation]);
 
@@ -42,7 +63,7 @@ export default function PostScreen({ route, navigation }) {
       <Text style={styles.autor}>por {autor}</Text>
       <Text style={styles.conteudo}>{conteudo}</Text>
 
-      {isLogado && (
+      {isAuthenticated && (
         <>
           <TouchableOpacity
             style={styles.botaoEditar}

@@ -1,4 +1,4 @@
-# 📌 blog-app
+# 📌 blog-app-mobile
 Este repositório foi criado com o intúito da criação de um blog mobile em que professores possam postar, editar e remover atividades, avisos e outros para seus alunos e para que os alunos possam ter uma comunicação mais fluida com os temas que acontecem em sua sala de aula e escola.
 
 # 📌 Índice

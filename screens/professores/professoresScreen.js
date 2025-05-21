@@ -6,7 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
@@ -17,9 +17,9 @@ const ITEMS_POR_PAGINA = 4;
 export default function ProfessoresScreen({ navigation }) {
   const [professores, setProfessores] = useState([]);
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
-  const API_URL = 'https://blog-api-ld0z.onrender.comprofessores';
+  const API_URL = 'https://blog-api-ld0z.onrender.com';
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -30,25 +30,47 @@ export default function ProfessoresScreen({ navigation }) {
         fontWeight: 'bold',
         fontSize: 20,
       },
+      headerLeft: () => (
+        <View style={{ paddingRight: 10 }}>
+          <TouchableOpacity
+            onPress={() => {
+                navigation.replace('Home');
+            }}
+            style={{
+              backgroundColor: '#4CAF50',
+              paddingVertical: 6,
+              marginHorizontal: -3,
+              paddingHorizontal: 2,
+              borderRadius: 3,
+              
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
+                Voltar 
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ),
     });
   }, [navigation]);
 
   useFocusEffect(
     useCallback(() => {
       carregarProfessores();
-    }, [])
+    }, [carregarProfessores])
   );
 
   const carregarProfessores = async () => {
-    setLoading(true);
+    setRefreshing(true);
     try {
-      const resposta = await axios.get(API_URL);
+      const resposta = await axios.get(`${API_URL}/professores`);
       setProfessores(resposta.data);
+      setPaginaAtual(1); 
     } catch (erro) {
       console.error('Erro ao buscar professores:', erro);
       Alert.alert('Erro', 'Não foi possível carregar os professores.');
     } finally {
-      setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -60,7 +82,6 @@ export default function ProfessoresScreen({ navigation }) {
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Excluir',
-          style: 'destructive',
           onPress: async () => {
             try {
               await axios.delete(`${API_URL}/${id}`);
@@ -69,8 +90,10 @@ export default function ProfessoresScreen({ navigation }) {
             } catch (erro) {
               console.error('Erro ao excluir professor:', erro);
               Alert.alert('Erro', 'Não foi possível excluir o professor.');
+            
             }
           },
+          style: 'destructive',
         },
       ]
     );
@@ -95,20 +118,20 @@ export default function ProfessoresScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Lista de Professores</Text>
-
-      {loading ? (
-        <ActivityIndicator size="large" color="#00838F" />
-      ) : (
+      <Text style={styles.titulo}>Lista de Professores</Text>       
         <FlatList
           data={professoresPaginados}
           keyExtractor={(item) =>
-            item._id ? item._id.toString() : Math.random().toString()
+            (item._id ? item._id.toString() : Math.random().toString())
+          }
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={carregarProfessores} />
           }
           renderItem={({ item }) => (
             <View style={styles.card}>
               <Text style={styles.nome}>{item.nome}</Text>
-              <Text style={styles.disciplina}>{item.materia}</Text>
+              <Text style={styles.materia}>{item.materia}</Text>
+              <Text style={styles.login}>{item.login}</Text>
 
               <View style={styles.botoesLinha}>
                 <TouchableOpacity
@@ -135,8 +158,6 @@ export default function ProfessoresScreen({ navigation }) {
             </View>
           )}
         />
-      )}
-
       <View style={styles.paginacao}>
         <TouchableOpacity
           onPress={paginaAnterior}
@@ -187,16 +208,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  disciplina: {
+  materia: {
     fontSize: 14,
     color: '#555',
-    marginTop: 5,
-    marginBottom: 10,
+    marginTop: 2,
+  },
+    login: {
+    fontSize: 14,
+    color: '#555',
   },
   botoesLinha: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     gap: 10,
+    marginTop: 10,
   },
   botao: {
     paddingVertical: 8,

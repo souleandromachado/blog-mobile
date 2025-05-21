@@ -6,11 +6,13 @@ export default function AdminScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const API_URL = 'https://blog-api-ld0z.onrender.com';
+
   // Função para carregar os posts da API
   const carregarPosts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://blog-api-ld0z.onrender.composts');
+      const response = await axios.get(`${API_URL}/posts`);
       setPosts(response.data);
     } catch (error) {
       Alert.alert('Erro', 'Falha ao carregar posts.');
@@ -35,6 +37,27 @@ export default function AdminScreen({ navigation }) {
         color: '#00838F',
         fontWeight: 'bold',
       },
+      headerLeft: () => (
+        <View style={{ paddingRight: 10 }}>
+          <TouchableOpacity
+            onPress={() => {
+                navigation.replace('Home');
+            }}
+            style={{
+              backgroundColor: '#4CAF50',
+              paddingVertical: 6,
+              marginHorizontal: -3,
+              paddingHorizontal: 2,
+              borderRadius: 3,
+              
+            }}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>
+                Voltar 
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ),
     });
   }, [navigation]);
 
@@ -56,7 +79,7 @@ export default function AdminScreen({ navigation }) {
   // Função que exclui post na API e atualiza o estado
   const deletarPost = async (id) => {
     try {
-      await axios.delete(`https://blog-api-ld0z.onrender.composts/${id}`);
+      await axios.delete(`${API_URL}/posts/${id}`);
       Alert.alert('Sucesso', 'Post deletado com sucesso!');
       // Atualiza estado removendo o post deletado
       setPosts((postsAtuais) => postsAtuais.filter(post => post._id !== id));
